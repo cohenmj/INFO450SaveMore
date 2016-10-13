@@ -242,7 +242,6 @@ int main()
 	int startCD;
 	int depositIntoCD;
 	char compoundInterest;
-	char checkOrderOption;
 	int checkWithdraw;
 	int saveWithdraw;
 	int cdWithdraw;
@@ -331,7 +330,6 @@ int main()
 	myChecking.displayInfo();
 	myCD.displayInfo();
 	cout << "==============================================" << endl;
-
 
 	return 0;
 }
