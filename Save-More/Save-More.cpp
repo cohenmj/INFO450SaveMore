@@ -211,7 +211,7 @@ public:
 	{
 
 		int option;
-		
+		//take fee from pre-withdraw balance
 		currentBalance = currentBalance - (currentBalance * 0.10);
 		
 		option = BankAccount::withdrawFunds(withdrawAmount); //derived 'withdrawFunds' function from 'BankAccount' Base Class
@@ -235,7 +235,6 @@ int main()
 	int saveDeposit;
 	int startCD;
 	int depositIntoCD;
-	char infoDisplay;
 	char compoundInterest;
 	char checkOrderOption;
 	int checkWithdraw;
@@ -278,19 +277,11 @@ int main()
 
 	//Display attributes for Each Account
 	cout << "Would you like to see your Account Information so far? Y/N" << endl;
-	cin >> infoDisplay;
 	cin.clear();
 	cin.ignore();
-	if (infoDisplay == 'Y' || 'y')
-	{
-		mySavings.displayInfo();
-		myChecking.displayInfo();
-		myCD.displayInfo();
-	}
-	else
-	{
-		cout << "That's too bad..." << endl;
-	}
+	mySavings.displayInfo();
+	myChecking.displayInfo();
+	myCD.displayInfo();
 
 	//Calculate Monthly Interest for Savings & CD Account
 	cout << "Would you like to compound interest on Savings and CD for a month? Y/N" << endl;
@@ -351,19 +342,11 @@ int main()
 	myCD.withdrawCD(cdWithdraw);
 
 	//Get and display each account status
-	cout << "Would you like to see your Account Summary? Y/N" << endl;
-	cin >> infoDisplay;
-	if (infoDisplay == 'Y' || 'y')
-	{
-		cout << "\nFinal Summary for Account:\n" << accountNumber << "\n" << endl;
-		mySavings.displayInfo();
-		myChecking.displayInfo();
-		myCD.displayInfo();
-	}
-	else
-	{
-		cout << "That's too bad...Bye!" << endl;
-	}
+	cout << "\nFinal Summary for Account:\n" << accountNumber << "\n" << endl;
+	mySavings.displayInfo();
+	myChecking.displayInfo();
+	myCD.displayInfo();
+
 
 	return 0;
 }
