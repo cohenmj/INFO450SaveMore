@@ -7,15 +7,15 @@ using namespace std;
 
 class BankAccount
 {
-public:
-	char *accountType;			//still not 100% sure why this wants a pointer(*)
-
+protected:
+	char *accountType;
 	double currentBalance;
 	double interestRate;
 
+public:
 	virtual int depositFunds(double depositAmount);
 	virtual int withdrawFunds(double withdrawAmount);
-	void displayInfo();
+	virtual void displayInfo();
 };
 //NO ACCOUNT CAN GO BELOW 0!!!!!!!!
 int BankAccount::depositFunds(double depositAmount)		//deposit function
@@ -30,6 +30,7 @@ int BankAccount::depositFunds(double depositAmount)		//deposit function
 		return -1;
 	}
 }
+
 int BankAccount::withdrawFunds(double withdrawAmount)		//withdrawal function
 {
 	if (currentBalance - withdrawAmount > 0)
@@ -42,6 +43,7 @@ int BankAccount::withdrawFunds(double withdrawAmount)		//withdrawal function
 		return -1;
 	}
 }
+
 void BankAccount::displayInfo()
 {
 	cout << "Type of Account: " << accountType << endl;
@@ -49,16 +51,18 @@ void BankAccount::displayInfo()
 	printf("Current Balance: %5.2f\n\n", currentBalance);
 
 }
+
 class SavingsAccount : public BankAccount
 {
 	//'currentBalance' under $10,000 earns 1% APR & over $10,000 earns 2% APR
 	//withdrawls are charged a fee of $2, deducted from 'currentBalance'
 public:
-	SavingsAccount()	//constructor
+	SavingsAccount() //constructor
 	{
 		accountType = "Savings";
+		
 	}
-	void compoundInterest(int i)
+	void compoundInterest(bool option)
 	{
 		if (currentBalance >= 10000)
 		{
@@ -69,9 +73,9 @@ public:
 			interestRate = 0.01;
 		}
 
-		if (i == 1)
+		if (option == true)
 		{
-			currentBalance = currentBalance + (currentBalance * (interestRate));
+			currentBalance += (currentBalance * (interestRate/12));
 		}
 	}
 	void depositSavings(double depositAmount)
@@ -91,7 +95,7 @@ public:
 		}
 		else
 		{
-			cout << "Sorry, please enter a valid input!" << endl;
+			cout << "Sorry, Not a valid input!" << endl;
 		}
 
 	}
@@ -114,6 +118,7 @@ public:
 		else
 		{
 			cout << "Sorry, you do not have sufficient funds to complete transaction!" << endl;
+			currentBalance += withdrawAmount;
 		}
 	}
 
@@ -132,6 +137,8 @@ public:
 	void orderChecks()
 	{
 		currentBalance -= 15.00;
+		cout << "Checks Ordered! -$15.00 from your Checking Account" << endl;
+		printf("Current Balance: %5.2f\n", currentBalance);
 	}
 	void depositChecking(double depositAmount)
 	{
@@ -146,13 +153,13 @@ public:
 		}
 		else
 		{
-			cout << "Sorry, please enter a valid input!" << endl;
+			cout << "Sorry, Not a valid input!" << endl;
 		}
 	}
-	void withdrawChecking(double withrdawAmount)
+	void withdrawChecking(double withdrawAmount)
 	{
 		int option;
-		option = BankAccount::withdrawFunds(withrdawAmount); //derived 'withdrawFunds' function from 'BankAccount' Base Class
+		option = BankAccount::withdrawFunds(withdrawAmount); //derived 'withdrawFunds' function from 'BankAccount' Base Class
 		if (option == 0)
 		{
 			if (currentBalance < 500)
@@ -175,18 +182,17 @@ class CertificateOfDeposit : public BankAccount //set on account creation and ca
 	//10% fee on entire pre-withdrawal balance
 	int term;
 public:
-
 	CertificateOfDeposit(int termAmount) //constructor
 	{
 		accountType = "Certificate of Deposit";
 		term = termAmount;
 	}
 
-	void compoundInterest(int option)
+	void compoundInterest(bool option)
 	{
-		if (option == 1)
+		if (option == true)
 		{
-			currentBalance = currentBalance + ((interestRate)* currentBalance);
+			currentBalance = currentBalance + ((interestRate/12)* currentBalance);
 		}
 	}
 	void depositCD(double depositAmount, int termAmount)
@@ -229,7 +235,7 @@ public:
 
 int main()
 {
-	//declared variables
+	//variable declarations
 	int accountNumber;
 	int checkDeposit;
 	int saveDeposit;
@@ -264,7 +270,7 @@ int main()
 	myChecking.depositChecking(saveDeposit);
 
 	//for CD
-	cout << "How long would you like to hold the CD? (enter # of years)" << endl;
+	cout << "How LONG would you like to hold the CD? (enter # of years)" << endl;
 	cin >> startCD;
 	cin.clear();
 	cin.ignore();
@@ -276,76 +282,55 @@ int main()
 	myCD.depositCD(depositIntoCD, startCD);
 
 	//Display attributes for Each Account
-	cout << "Would you like to see your Account Information so far? Y/N" << endl;
-	cin.clear();
-	cin.ignore();
+	cout << "------------------------------" << endl;
+	cout << "Current Account Summary:\n" << endl;
+	cout << "Account Number: " << accountNumber << "\n" << endl;
 	mySavings.displayInfo();
 	myChecking.displayInfo();
 	myCD.displayInfo();
+	cout << "------------------------------" << endl;
 
 	//Calculate Monthly Interest for Savings & CD Account
-	cout << "Would you like to compound interest on Savings and CD for a month? Y/N" << endl;
-	cin >> compoundInterest;
-	if (compoundInterest == 'Y')
-	{
-		mySavings.compoundInterest(1);
-		myCD.compoundInterest(1);
+	mySavings.compoundInterest(true);
+	myCD.compoundInterest(true);
 
-		//Display After compounding Interest
-		cout << "Savings & CD after Compounding A Month of Interest:\n" << endl;
-		mySavings.displayInfo();
-		myCD.displayInfo();
-	}
-	else
-	{
-		cout << "That's too bad..." << endl;
-	}
-
+	//Display After compounding Interest
+	cout << "-------------------------------------------------------" << endl;
+	cout << "Savings & CD after Compounding A Month of Interest:\n" << endl;
+	mySavings.displayInfo();
+	myCD.displayInfo();
+	cout << "-------------------------------------------------------" << endl;
+	
 	//Order Checks
-	cout << "Would you Like to Order Checks? Y/N" << endl;
-	cin >> checkOrderOption;
-	cin.clear();
-	cin.ignore();
-
-	if (checkOrderOption == 'Y')
-	{
-		cout << "Checks Ordered!" << endl;
-		myChecking.orderChecks();
-	}
-	else if (checkOrderOption == 'N')
-	{
-		cout << "We hope you reconsider!" << endl;
-	}
-	else
-	{
-		cout << "Your Option is Invalid! No Checks for you!" << endl;
-	}
-
-
+	myChecking.orderChecks();	
+	
 	//Withdraw from Checking and Savings
 	cout << "How much would you like to withdraw from your Checking Account?" << endl;
 	cin >> checkWithdraw;
 	cin.clear();
 	cin.ignore();
 	myChecking.withdrawChecking(checkWithdraw);
-	cout << "How much would you like to withdraw from your Savings Account?" << endl;
+	cout << "How much would you like to withdraw from your Savings Account? ($2 fee for withdrawals)" << endl;
 	cin >> saveWithdraw;
 	cin.clear();
 	cin.ignore();
 	mySavings.withdrawSavings(saveWithdraw);
 
 	//Perform early withdrawal for CD
-	cout << "How much would you like to take out of your CD?" << endl;
+	cout << "How much would you like to take out of your CD? (10% fee on pre-withdrawal balance)" << endl;
 	cin >> cdWithdraw;
 	cin.clear();
 	cin.ignore();
 	myCD.withdrawCD(cdWithdraw);
 
-	//Get and display each account status
-	cout << "\nFinal Summary for Account:\n" << accountNumber << "\n" << endl;
+	//Get and display each account status 
+	cout << "==============================================" << endl;
+	cout << "Final Summary: \n" << endl;
+	cout << "Account Number: " << accountNumber << "\n" << endl;
 	mySavings.displayInfo();
 	myChecking.displayInfo();
 	myCD.displayInfo();
+	cout << "==============================================" << endl;
 
 
 	return 0;
